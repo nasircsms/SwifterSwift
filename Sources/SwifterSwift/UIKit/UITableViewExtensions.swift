@@ -56,7 +56,7 @@ public extension UITableView {
     /// SwifterSwift: Reload data with a completion handler.
     ///
     /// - Parameter completion: completion handler to run after reloadData finishes.
-    func reloadData(_ completion: @escaping () -> Void) {
+    func reloadDataWith(_ completion: @escaping () -> Void) {
         UIView.animate(withDuration: 0, animations: {
             self.reloadData()
         }, completion: { _ in
