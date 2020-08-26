@@ -33,4 +33,49 @@ final class MutableCollectionTests: XCTestCase {
         array2.sort(by: \String.first, with: optionalCompare)
         XCTAssertEqual(array2, ["Bryant", "James", "Wade", ""])
     }
+
+    func testSortByTwoKeyPaths() {
+        var people = [
+            SimplePerson(forename: "Tom", surname: "James", age: 32),
+            SimplePerson(forename: "Angeline", surname: "Wade", age: 57),
+            SimplePerson(forename: "Max", surname: "James", age: 34)
+        ]
+        people.sort(by: \.surname, and: \.age)
+        let expectedResult = [
+            SimplePerson(forename: "Tom", surname: "James", age: 32),
+            SimplePerson(forename: "Max", surname: "James", age: 34),
+            SimplePerson(forename: "Angeline", surname: "Wade", age: 57)
+        ]
+        XCTAssertEqual(people, expectedResult)
+    }
+
+    func testSortByThreeKeyPaths() {
+        var people = [
+            SimplePerson(forename: "Tom", surname: "James", age: 32),
+            SimplePerson(forename: "Angeline", surname: "Wade", age: 57),
+            SimplePerson(forename: "Max", surname: "James", age: 34),
+            SimplePerson(forename: "Angeline", surname: "Wade", age: 82)
+        ]
+        people.sort(by: \.surname, and: \.forename, and: \.age)
+        let expectedResult = [
+            SimplePerson(forename: "Max", surname: "James", age: 34),
+            SimplePerson(forename: "Tom", surname: "James", age: 32),
+            SimplePerson(forename: "Angeline", surname: "Wade", age: 57),
+            SimplePerson(forename: "Angeline", surname: "Wade", age: 82)
+        ]
+        XCTAssertEqual(people, expectedResult)
+    }
+
+    func testAssignToAll() {
+        var collection: [TestStruct] = [1, 2, 3, 4, 5]
+        collection.assignToAll(value: 0, by: \.testField)
+        let expectedCollection: [TestStruct] = [0, 0, 0, 0, 0]
+        XCTAssertEqual(collection, expectedCollection)
+
+        // check with an empty collection
+        var initialEmptyCollection: [TestStruct] = []
+        initialEmptyCollection.assignToAll(value: 5, by: \.testField)
+        let expectedEmptyCollection: [TestStruct] = []
+        XCTAssertEqual(initialEmptyCollection, expectedEmptyCollection)
+    }
 }

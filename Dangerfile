@@ -20,7 +20,6 @@ end
 # Swiftlint Danger
 # Workaround see: https://github.com/ashfurrow/danger-ruby-swiftlint/issues/87
 files_to_lint = (git.modified_files - git.deleted_files) + git.added_files
-files_to_lint.reject! { |f| f.end_with?('XCTestManifests.swift') }
 swiftlint.lint_files(files_to_lint, additional_swiftlint_args: '--no-force-exclude')
         
 # Checks if pull request is labeled as [WIP]
@@ -52,4 +51,3 @@ label_tests_summary(label: "macOS", platform: "macos")
 summary(platform: "ios")
 summary(platform: "tvos")
 summary(platform: "macos")
-summary(platform: "watchos")

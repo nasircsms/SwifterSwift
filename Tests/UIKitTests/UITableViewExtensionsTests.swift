@@ -55,7 +55,7 @@ final class UITableViewExtensionsTests: XCTestCase {
             XCTAssert(true)
             exp.fulfill()
         }
-        waitForExpectations(timeout: 5, handler: nil)
+        waitForExpectations(timeout: 5)
     }
 
     func testRemoveTableFooterView() {
@@ -70,17 +70,6 @@ final class UITableViewExtensionsTests: XCTestCase {
         XCTAssertNotNil(tableView.tableHeaderView)
         tableView.removeTableHeaderView()
         XCTAssertNil(tableView.tableHeaderView)
-    }
-
-    func testScrollToBottom() {
-        let bottomOffset = CGPoint(x: 0, y: tableView.contentSize.height - tableView.bounds.size.height)
-        tableView.scrollToBottom()
-        XCTAssertEqual(bottomOffset, tableView.contentOffset)
-    }
-
-    func testScrollToTop() {
-        tableView.scrollToTop()
-        XCTAssertEqual(CGPoint.zero, tableView.contentOffset)
     }
 
     func testDequeueReusableCellWithClass() {
@@ -105,7 +94,7 @@ final class UITableViewExtensionsTests: XCTestCase {
 
     func testIsValidIndexPath() {
         let validIndexPath = IndexPath(row: 0, section: 0)
-        XCTAssertTrue(tableView.isValidIndexPath(validIndexPath))
+        XCTAssert(tableView.isValidIndexPath(validIndexPath))
 
         let invalidIndexPath = IndexPath(row: 10, section: 0)
         XCTAssertFalse(tableView.isValidIndexPath(invalidIndexPath))

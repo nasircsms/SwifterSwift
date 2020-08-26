@@ -14,8 +14,8 @@ import Foundation
 import UIKit
 #endif
 
-#if canImport(Cocoa) && !targetEnvironment(macCatalyst)
-import Cocoa
+#if canImport(AppKit)
+import AppKit
 #endif
 
 #if canImport(CoreGraphics)
@@ -31,9 +31,17 @@ public extension String {
     ///		"SGVsbG8gV29ybGQh".base64Decoded = Optional("Hello World!")
     ///
     var base64Decoded: String? {
-        // https://github.com/Reza-Rg/Base64-Swift-Extension/blob/master/Base64.swift
-        guard let decodedData = Data(base64Encoded: self) else { return nil }
-        return String(data: decodedData, encoding: .utf8)
+        let remainder = count % 4
+
+        var padding = ""
+        if remainder > 0 {
+            padding = String(repeating: "=", count: 4 - remainder)
+        }
+
+        guard let data = Data(base64Encoded: self + padding,
+                              options: .ignoreUnknownCharacters) else { return nil }
+
+        return String(data: data, encoding: .utf8)
     }
     #endif
 
@@ -249,7 +257,7 @@ public extension String {
     var isNumeric: Bool {
         let scanner = Scanner(string: self)
         scanner.locale = NSLocale.current
-        #if os(Linux)
+        #if os(Linux) || targetEnvironment(macCatalyst)
         return scanner.scanDecimal() != nil && scanner.isAtEnd
         #else
         return scanner.scanDecimal(nil) && scanner.isAtEnd
@@ -400,6 +408,16 @@ public extension String {
     ///
     var urlEncoded: String {
         return addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
+    }
+    #endif
+
+    #if canImport(Foundation)
+    /// SwifterSwift: Escaped string for inclusion in a regular expression pattern
+    ///
+    /// "hello ^$ there" -> "hello \\^\\$ there"
+    ///
+    var regexEscaped: String {
+      return NSRegularExpression.escapedPattern(for: self)
     }
     #endif
 
@@ -593,28 +611,24 @@ public extension String {
         return self[self.index(startIndex, offsetBy: index)]
     }
 
-    /// SwifterSwift: Safely subscript string within a half-open range.
+    /// SwifterSwift: Safely subscript string within a given range.
     ///
-    ///		"Hello World!"[safe: 6..<11] -> "World"
-    ///		"Hello World!"[safe: 21..<110] -> nil
+    ///        "Hello World!"[safe: 6..<11] -> "World"
+    ///        "Hello World!"[safe: 21..<110] -> nil
     ///
-    /// - Parameter range: Half-open range.
-    subscript(safe range: CountableRange<Int>) -> String? {
-        guard let lowerIndex = index(startIndex, offsetBy: max(0, range.lowerBound), limitedBy: endIndex) else { return nil }
-        guard let upperIndex = index(lowerIndex, offsetBy: range.upperBound - range.lowerBound, limitedBy: endIndex) else { return nil }
-        return String(self[lowerIndex..<upperIndex])
-    }
+    ///        "Hello World!"[safe: 6...11] -> "World!"
+    ///        "Hello World!"[safe: 21...110] -> nil
+    ///
+    /// - Parameter range: Range expression.
+    subscript<R>(safe range: R) -> String? where R: RangeExpression, R.Bound == Int {
+        let range = range.relative(to: Int.min..<Int.max)
+        guard range.lowerBound >= 0,
+            let lowerIndex = index(startIndex, offsetBy: range.lowerBound, limitedBy: endIndex),
+            let upperIndex = index(startIndex, offsetBy: range.upperBound, limitedBy: endIndex) else {
+                return nil
+        }
 
-    /// SwifterSwift: Safely subscript string within a closed range.
-    ///
-    ///		"Hello World!"[safe: 6...11] -> "World!"
-    ///		"Hello World!"[safe: 21...110] -> nil
-    ///
-    /// - Parameter range: Closed range.
-    subscript(safe range: ClosedRange<Int>) -> String? {
-        guard let lowerIndex = index(startIndex, offsetBy: max(0, range.lowerBound), limitedBy: endIndex) else { return nil }
-        guard let upperIndex = index(lowerIndex, offsetBy: range.upperBound - range.lowerBound, limitedBy: endIndex) else { return nil }
-        return String(self[lowerIndex...upperIndex])
+        return String(self[lowerIndex..<upperIndex])
     }
 
     #if os(iOS) || os(macOS)
@@ -908,7 +922,7 @@ public extension String {
     ///   - trailing: string to add at the end of truncated string.
     /// - Returns: truncated string (this is an extr...).
     func truncated(toLength length: Int, trailing: String? = "...") -> String {
-        guard 1..<count ~= length else { return self }
+        guard 0..<count ~= length else { return self }
         return self[startIndex..<index(startIndex, offsetBy: length)] + (trailing ?? "")
     }
 
@@ -951,6 +965,17 @@ public extension String {
     /// - Returns: true if string matches the pattern.
     func matches(pattern: String) -> Bool {
         return range(of: pattern, options: .regularExpression, range: nil, locale: nil) != nil
+    }
+    #endif
+
+    #if canImport(Foundation)
+    /// SwifterSwift: Overload Swift's 'contains' operator for matching regex pattern
+    ///
+    /// - Parameter lhs: String to check on regex pattern.
+    /// - Parameter rhs: Regex pattern to match against.
+    /// - Returns: true if string matches the pattern.
+    static func ~= (lhs: String, rhs: String) -> Bool {
+        return lhs.range(of: rhs, options: .regularExpression) != nil
     }
     #endif
 
@@ -1108,7 +1133,7 @@ public extension String {
     private typealias Font = UIFont
     #endif
 
-    #if canImport(Cocoa) && !targetEnvironment(macCatalyst)
+    #if canImport(AppKit) && !targetEnvironment(macCatalyst)
     private typealias Font = NSFont
     #endif
 
@@ -1140,22 +1165,12 @@ public extension String {
     }
     #endif
 
-    #if canImport(UIKit)
+    #if canImport(AppKit) || canImport(UIKit)
     /// SwifterSwift: Add color to string.
     ///
     /// - Parameter color: text color.
     /// - Returns: a NSAttributedString versions of string colored with given color.
-    func colored(with color: UIColor) -> NSAttributedString {
-        return NSMutableAttributedString(string: self, attributes: [.foregroundColor: color])
-    }
-    #endif
-
-    #if canImport(Cocoa) && !targetEnvironment(macCatalyst)
-    /// SwifterSwift: Add color to string.
-    ///
-    /// - Parameter color: text color.
-    /// - Returns: a NSAttributedString versions of string colored with given color.
-    func colored(with color: NSColor) -> NSAttributedString {
+    func colored(with color: Color) -> NSAttributedString {
         return NSMutableAttributedString(string: self, attributes: [.foregroundColor: color])
     }
     #endif

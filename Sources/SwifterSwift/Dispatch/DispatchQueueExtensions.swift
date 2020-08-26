@@ -42,6 +42,35 @@ public extension DispatchQueue {
         return DispatchQueue.getSpecific(key: key) != nil
     }
 
+    /// SwifterSwift: Runs passed closure asynchronous after certain time interval
+    ///
+    /// - Parameters:
+    ///   - delay: The time inverval after which the closure will run.
+    ///   - qos: Quality of service at which the work item should be executed.
+    ///   - flags: Flags that control the execution environment of the work item.
+    ///   - work: The closure to run after certain time interval.
+    func asyncAfter(delay: Double,
+                    qos: DispatchQoS = .unspecified,
+                    flags: DispatchWorkItemFlags = [],
+                    execute work: @escaping () -> Void) {
+        asyncAfter(deadline: .now() + delay, qos: qos, flags: flags, execute: work)
+    }
+
+    func debounce(delay: Double, action: @escaping () -> Void) -> () -> Void {
+        // http://stackoverflow.com/questions/27116684/how-can-i-debounce-a-method-call
+        var lastFireTime = DispatchTime.now()
+        let deadline = { lastFireTime + delay }
+        return {
+            self.asyncAfter(deadline: deadline()) {
+                let now = DispatchTime.now()
+                if now >= deadline() {
+                    lastFireTime = now
+                    action()
+                }
+            }
+        }
+    }
+
 }
 
 #endif

@@ -111,7 +111,7 @@ public extension UIView {
 
     /// SwifterSwift: Check if view is in RTL format.
     var isRightToLeft: Bool {
-        if #available(iOS 10.0, *, tvOS 10.0, *) {
+        if #available(tvOS 10.0, *) {
             return effectiveUserInterfaceLayoutDirection == .rightToLeft
         } else {
             return false
@@ -170,6 +170,16 @@ public extension UIView {
         }
     }
 
+    /// SwifterSwift: Masks to bounds of view; also inspectable from Storyboard.
+    @IBInspectable var masksToBounds: Bool {
+        get {
+            return layer.masksToBounds
+        }
+        set {
+            layer.masksToBounds = newValue
+        }
+    }
+
     /// SwifterSwift: Size of view.
     var size: CGSize {
         get {
@@ -203,7 +213,6 @@ public extension UIView {
         }
     }
 
-    // swiftlint:disable identifier_name
     /// SwifterSwift: x origin of view.
     var x: CGFloat {
         get {
@@ -213,9 +222,7 @@ public extension UIView {
             frame.origin.x = newValue
         }
     }
-    // swiftlint:enable identifier_name
 
-    // swiftlint:disable identifier_name
     /// SwifterSwift: y origin of view.
     var y: CGFloat {
         get {
@@ -225,8 +232,6 @@ public extension UIView {
             frame.origin.y = newValue
         }
     }
-    // swiftlint:enable identifier_name
-
 }
 
 // MARK: - Methods
@@ -265,11 +270,14 @@ public extension UIView {
 
     /// SwifterSwift: Add shadow to view.
     ///
+    /// - Note: This method only works with non-clear background color, or if the view has a `shadowPath` set.
+    /// See parameter `opacity` for detail.
+    ///
     /// - Parameters:
     ///   - color: shadow color (default is #137992).
     ///   - radius: shadow radius (default is 3).
     ///   - offset: shadow offset (default is .zero).
-    ///   - opacity: shadow opacity (default is 0.5).
+    ///   - opacity: shadow opacity (default is 0.5). It will also be affected by the `alpha` of `backgroundColor`
     func addShadow(ofColor color: UIColor = UIColor(red: 0.07, green: 0.47, blue: 0.57, alpha: 1.0), radius: CGFloat = 3, offset: CGSize = .zero, opacity: Float = 0.5) {
         layer.shadowColor = color.cgColor
         layer.shadowOffset = offset
@@ -321,6 +329,20 @@ public extension UIView {
     /// - Returns: optional UIView (if applicable).
     class func loadFromNib(named name: String, bundle: Bundle? = nil) -> UIView? {
         return UINib(nibName: name, bundle: bundle).instantiate(withOwner: nil, options: nil)[0] as? UIView
+    }
+
+    /// SwifterSwift: Load view of a certain type from nib
+    ///
+    /// - Parameters:
+    ///   - withClass: UIView type.
+    ///   - bundle: bundle of nib (default is nil).
+    /// - Returns: UIView
+    class func loadFromNib<T: UIView>(withClass name: T.Type, bundle: Bundle? = nil) -> T {
+        let named = String(describing: name)
+        guard let view = UINib(nibName: named, bundle: bundle).instantiate(withOwner: nil, options: nil)[0] as? T else {
+            fatalError("First element in xib file \(named) is not of type \(named)")
+        }
+        return view
     }
 
     /// SwifterSwift: Remove all subviews in view.
@@ -573,7 +595,54 @@ public extension UIView {
     func ancestorView<T: UIView>(withClass name: T.Type) -> T? {
         return ancestorView(where: { $0 is T }) as? T
     }
+}
 
+// MARK: - Constraints
+public extension UIView {
+    /// SwifterSwift: Search constraints until we find one for the given view
+    /// and attribute. This will enumerate ancestors since constraints are
+    /// always added to the common ancestor.
+    ///
+    /// - Parameter attribute: the attribute to find
+    /// - Parameter at: the view to find
+    /// - Returns: matching constraint
+    func findConstraint(attribute: NSLayoutConstraint.Attribute, for view: UIView) -> NSLayoutConstraint? {
+        let constraint = constraints.first {
+            ($0.firstAttribute == attribute && $0.firstItem as? UIView == view) ||
+            ($0.secondAttribute == attribute && $0.secondItem as? UIView == view)
+        }
+        return constraint ?? superview?.findConstraint(attribute: attribute, for: view)
+    }
+
+    /// SwifterSwift: First width constraint for this view
+    var widthConstraint: NSLayoutConstraint? {
+        findConstraint(attribute: .width, for: self)
+    }
+
+    /// SwifterSwift: First height constraint for this view
+    var heightConstraint: NSLayoutConstraint? {
+        findConstraint(attribute: .height, for: self)
+    }
+
+    /// SwifterSwift: First leading constraint for this view
+    var leadingConstraint: NSLayoutConstraint? {
+        findConstraint(attribute: .leading, for: self)
+    }
+
+    /// SwifterSwift: First trailing constraint for this view
+    var trailingConstraint: NSLayoutConstraint? {
+        findConstraint(attribute: .trailing, for: self)
+    }
+
+    /// SwifterSwift: First top constraint for this view
+    var topConstraint: NSLayoutConstraint? {
+        findConstraint(attribute: .top, for: self)
+    }
+
+    /// SwifterSwift: First bottom constraint for this view
+    var bottomConstraint: NSLayoutConstraint? {
+        findConstraint(attribute: .bottom, for: self)
+    }
 }
 
 #endif

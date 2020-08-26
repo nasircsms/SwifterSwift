@@ -22,10 +22,8 @@ public extension Collection {
     ///
     /// - Parameter each: closure to run for each element.
     func forEachInParallel(_ each: (Self.Element) -> Void) {
-        let indicesArray = Array(indices)
-        DispatchQueue.concurrentPerform(iterations: indicesArray.count) { (index) in
-            let elementIndex = indicesArray[index]
-            each(self[elementIndex])
+        DispatchQueue.concurrentPerform(iterations: count) {
+            each(self[index(startIndex, offsetBy: $0)])
         }
     }
     #endif
@@ -41,10 +39,25 @@ public extension Collection {
         return indices.contains(index) ? self[index] : nil
     }
 
-}
-
-// MARK: - Methods (Int)
-public extension Collection where Index == Int {
+    /// SwifterSwift: Returns an array of slices of length "size" from the array. If array can't be split evenly, the final slice will be the remaining elements.
+    ///
+    ///     [0, 2, 4, 7].group(by: 2) -> [[0, 2], [4, 7]]
+    ///     [0, 2, 4, 7, 6].group(by: 2) -> [[0, 2], [4, 7], [6]]
+    ///
+    /// - Parameter size: The size of the slices to be returned.
+    /// - Returns: grouped self.
+    func group(by size: Int) -> [[Element]]? {
+        // Inspired by: https://lodash.com/docs/4.17.4#chunk
+        guard size > 0, !isEmpty else { return nil }
+        var start = startIndex
+        var slices = [[Element]]()
+        while start != endIndex {
+            let end = index(start, offsetBy: size, limitedBy: endIndex) ?? endIndex
+            slices.append(Array(self[start..<end]))
+            start = end
+        }
+        return slices
+    }
 
     /// SwifterSwift: Get all indices where condition is met.
     ///
@@ -53,11 +66,8 @@ public extension Collection where Index == Int {
     /// - Parameter condition: condition to evaluate each element against.
     /// - Returns: all indices where the specified condition evaluates to true. (optional)
     func indices(where condition: (Element) throws -> Bool) rethrows -> [Index]? {
-        var indicies: [Index] = []
-        for (index, value) in lazy.enumerated() where try condition(value) {
-            indicies.append(index)
-        }
-        return indicies.isEmpty ? nil : indicies
+        let indices = try self.indices.filter { try condition(self[$0]) }
+        return indices.isEmpty ? nil : indices
     }
 
     /// SwifterSwift: Calls the given closure with an array of size of the parameter slice.
@@ -69,45 +79,43 @@ public extension Collection where Index == Int {
     ///   - slice: size of array in each interation.
     ///   - body: a closure that takes an array of slice size as a parameter.
     func forEach(slice: Int, body: ([Element]) throws -> Void) rethrows {
-        guard slice > 0, !isEmpty else { return }
-
-        var value: Int = 0
-        while value < count {
-            try body(Array(self[Swift.max(value, startIndex)..<Swift.min(value + slice, endIndex)]))
-            value += slice
+        var start = startIndex
+        while case let end = index(start, offsetBy: slice, limitedBy: endIndex) ?? endIndex,
+            start != end {
+                try body(Array(self[start..<end]))
+                start = end
         }
-    }
-
-    /// SwifterSwift: Returns an array of slices of length "size" from the array. If array can't be split evenly, the final slice will be the remaining elements.
-    ///
-    ///     [0, 2, 4, 7].group(by: 2) -> [[0, 2], [4, 7]]
-    ///     [0, 2, 4, 7, 6].group(by: 2) -> [[0, 2], [4, 7], [6]]
-    ///
-    /// - Parameter size: The size of the slices to be returned.
-    /// - Returns: grouped self.
-    func group(by size: Int) -> [[Element]]? {
-        // Inspired by: https://lodash.com/docs/4.17.4#chunk
-        guard size > 0, !isEmpty else { return nil }
-        var value: Int = 0
-        var slices: [[Element]] = []
-        while value < count {
-            slices.append(Array(self[Swift.max(value, startIndex)..<Swift.min(value + size, endIndex)]))
-            value += size
-        }
-        return slices
     }
 
 }
 
-// MARK: - Methods (Integer)
-public extension Collection where Element == IntegerLiteralType, Index == Int {
+// MARK: - Methods (Equatable)
+public extension Collection where Element: Equatable {
+
+    /// SwifterSwift: All indices of specified item.
+    ///
+    ///        [1, 2, 2, 3, 4, 2, 5].indices(of 2) -> [1, 2, 5]
+    ///        [1.2, 2.3, 4.5, 3.4, 4.5].indices(of 2.3) -> [1]
+    ///        ["h", "e", "l", "l", "o"].indices(of "l") -> [2, 3]
+    ///
+    /// - Parameter item: item to check.
+    /// - Returns: an array with all indices of the given item.
+    func indices(of item: Element) -> [Index] {
+        return indices.filter { self[$0] == item }
+    }
+
+}
+
+// MARK: - Methods (BinaryInteger)
+public extension Collection where Element: BinaryInteger {
 
     /// SwifterSwift: Average of all elements in array.
     ///
     /// - Returns: the average of the array's elements.
     func average() -> Double {
         // http://stackoverflow.com/questions/28288148/making-my-function-calculate-average-of-array-swift
-        return isEmpty ? 0 : Double(reduce(0, +)) / Double(count)
+        guard !isEmpty else { return .zero }
+        return Double(reduce(.zero, +)) / Double(count)
     }
 
 }
@@ -121,8 +129,8 @@ public extension Collection where Element: FloatingPoint {
     ///
     /// - Returns: average of the array's elements.
     func average() -> Element {
-        guard !isEmpty else { return 0 }
-        return reduce(0, {$0 + $1}) / Element(count)
+        guard !isEmpty else { return .zero }
+        return reduce(.zero, +) / Element(count)
     }
 
 }

@@ -6,8 +6,8 @@
 //  Copyright © 2017 SwifterSwift
 //
 
-#if canImport(Cocoa) && !targetEnvironment(macCatalyst)
-import Cocoa
+#if canImport(AppKit) && !targetEnvironment(macCatalyst)
+import AppKit
 
 // MARK: - Properties
 public extension NSView {
@@ -46,7 +46,7 @@ public extension NSView {
         set {
             wantsLayer = true
             layer?.masksToBounds = true
-            layer?.cornerRadius = abs(CGFloat(Int(newValue * 100)) / 100)
+            layer?.cornerRadius = newValue.magnitude
         }
     }
 

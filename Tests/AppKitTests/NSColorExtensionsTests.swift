@@ -9,8 +9,8 @@
 import XCTest
 @testable import SwifterSwift
 
-#if canImport(Cocoa) && !targetEnvironment(macCatalyst)
-import Cocoa
+#if canImport(AppKit)
+import AppKit
 
 final class NSColorExtensionsTests: XCTestCase {
 

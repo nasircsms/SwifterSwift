@@ -55,7 +55,7 @@ final class UIViewExtensionsTests: XCTestCase {
         let txtView = UITextField(frame: CGRect.zero)
         window.addSubview(txtView)
         txtView.becomeFirstResponder()
-        XCTAssertTrue(txtView.firstResponder() === txtView)
+        XCTAssert(txtView.firstResponder() === txtView)
 
         // When a subview is firstResponder
         let superView = UIView()
@@ -63,10 +63,10 @@ final class UIViewExtensionsTests: XCTestCase {
         let subView = UITextField(frame: CGRect.zero)
         superView.addSubview(subView)
         subView.becomeFirstResponder()
-        XCTAssertTrue(superView.firstResponder() === subView)
+        XCTAssert(superView.firstResponder() === subView)
 
         // When you have to find recursively
-        XCTAssertTrue(window.firstResponder() === subView)
+        XCTAssert(window.firstResponder() === subView)
 
     }
 
@@ -156,6 +156,14 @@ final class UIViewExtensionsTests: XCTestCase {
         XCTAssertEqual(view.shadowOpacity, 0.5)
     }
 
+    func testMasksToBounds() {
+        let view = UIView(frame: .zero)
+        view.layer.masksToBounds = true
+        XCTAssertTrue(view.masksToBounds)
+        view.masksToBounds = false
+        XCTAssertFalse(view.masksToBounds)
+    }
+
     func testSize() {
         let frame = CGRect(x: 0, y: 0, width: 100, height: 100)
         let view = UIView(frame: frame)
@@ -229,7 +237,7 @@ final class UIViewExtensionsTests: XCTestCase {
         }
 
         XCTAssertEqual(view2.alpha, 1)
-        waitForExpectations(timeout: 0.5, handler: nil)
+        waitForExpectations(timeout: 0.5)
     }
 
     func testFadeOut() {
@@ -249,7 +257,7 @@ final class UIViewExtensionsTests: XCTestCase {
             fadeOutExpectation.fulfill()
         }
         XCTAssertEqual(view2.alpha, 0)
-        waitForExpectations(timeout: 0.5, handler: nil)
+        waitForExpectations(timeout: 0.5)
     }
 
     func testRotateByAngle() {
@@ -272,7 +280,7 @@ final class UIViewExtensionsTests: XCTestCase {
             rotateExpectation.fulfill()
         }
         XCTAssertEqual(view3.transform, transform3)
-        waitForExpectations(timeout: 0.5, handler: nil)
+        waitForExpectations(timeout: 0.5)
     }
 
     func testRotateToAngle() {
@@ -295,7 +303,7 @@ final class UIViewExtensionsTests: XCTestCase {
             rotateExpectation.fulfill()
         }
         XCTAssertEqual(view3.transform, transform3)
-        waitForExpectations(timeout: 0.5, handler: nil)
+        waitForExpectations(timeout: 0.5)
     }
 
     func testScale() {
@@ -312,6 +320,12 @@ final class UIViewExtensionsTests: XCTestCase {
 
         XCTAssertEqual(view1.transform, view2.transform)
         XCTAssertEqual(view1.transform, view3.transform)
+    }
+
+    func testLoadFromNib() {
+        let bundle = Bundle(for: UIViewExtensionsTests.self)
+        XCTAssertNotNil(UIView.loadFromNib(named: "UIImageView", bundle: bundle))
+        XCTAssertNotNil(UIView.loadFromNib(withClass: UIImageView.self, bundle: bundle))
     }
 
     func testRemoveSubviews() {
@@ -462,6 +476,47 @@ final class UIViewExtensionsTests: XCTestCase {
         XCTAssertEqual(buttonSubview.ancestorView(withClass: UITableView.self), tableView)
     }
 
+    func testFindConstraint() {
+        let view = UIView()
+        let container = UIView()
+        container.addSubview(view)
+        NSLayoutConstraint.activate([
+            view.widthAnchor.constraint(equalToConstant: 1),
+            container.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 3)
+        ])
+        XCTAssertNotNil(view.findConstraint(attribute: .width, for: view))
+        XCTAssertNil(view.findConstraint(attribute: .height, for: view))
+
+        // pathological case
+        XCTAssertNil(view.findConstraint(attribute: .height, for: UIView()))
+    }
+
+    func testConstraintProperties() {
+        let container = UIView()
+        let view = UIView()
+        container.addSubview(view)
+
+        // setup constraints, some in container and some in view
+        NSLayoutConstraint.activate([
+            view.widthAnchor.constraint(equalToConstant: 1),
+            view.heightAnchor.constraint(equalToConstant: 2),
+            container.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 3),
+            container.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 4),
+            view.topAnchor.constraint(equalTo: container.topAnchor, constant: 5),
+            view.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: 6)
+        ])
+
+        // find them
+        XCTAssertEqual(view.widthConstraint!.constant, 1)
+        XCTAssertEqual(view.heightConstraint!.constant, 2)
+        XCTAssertEqual(view.leadingConstraint!.constant, 3)
+        XCTAssertEqual(view.trailingConstraint!.constant, 4)
+        XCTAssertEqual(view.topConstraint!.constant, 5)
+        XCTAssertEqual(view.bottomConstraint!.constant, 6)
+
+        // simple empty case test
+        XCTAssertNil(container.widthConstraint)
+    }
 }
 
 #endif

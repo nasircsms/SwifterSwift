@@ -186,21 +186,56 @@ public extension Sequence {
         return (Array(matching), Array(nonMatching))
     }
 
-    /// SwifterSwift: Return a sorted array  based on a keypath and a compare function.
+    /// SwifterSwift: Return a sorted array based on a key path and a compare function.
     ///
-    /// - Parameter path: Key path to sort. The key path type must be Comparable.
+    /// - Parameter keyPath: Key path to sort by.
     /// - Parameter compare: Comparation function that will determine the ordering.
     /// - Returns: The sorted array.
     func sorted<T>(by keyPath: KeyPath<Element, T>, with compare: (T, T) -> Bool) -> [Element] {
         return sorted { compare($0[keyPath: keyPath], $1[keyPath: keyPath]) }
     }
 
-    /// SwifterSwift: Return a sorted array  based on a keypath and a compare function.
+    /// SwifterSwift: Return a sorted array based on a key path.
     ///
-    /// - Parameter path: Key path to sort. The key path type must be Comparable.
+    /// - Parameter keyPath: Key path to sort by. The key path type must be Comparable.
     /// - Returns: The sorted array.
     func sorted<T: Comparable>(by keyPath: KeyPath<Element, T>) -> [Element] {
         return sorted { $0[keyPath: keyPath] < $1[keyPath: keyPath] }
+    }
+
+    /// SwifterSwift: Returns a sorted sequence based on two key paths. The second one will be used in case the values of the first one match.
+    ///
+    /// - Parameters:
+    ///     - keyPath1: Key path to sort by. Must be Comparable.
+    ///     - keyPath2: Key path to sort by in case the values of `keyPath1` match. Must be Comparable.
+    func sorted<T: Comparable, U: Comparable>(by keyPath1: KeyPath<Element, T>,
+                                              and keyPath2: KeyPath<Element, U>) -> [Element] {
+        return sorted {
+            if $0[keyPath: keyPath1] != $1[keyPath: keyPath1] {
+                return $0[keyPath: keyPath1] < $1[keyPath: keyPath1]
+            }
+            return $0[keyPath: keyPath2] < $1[keyPath: keyPath2]
+        }
+    }
+
+    /// SwifterSwift: Returns a sorted sequence based on three key paths. Whenever the values of one key path match, the next one will be used.
+    ///
+    /// - Parameters:
+    ///     - keyPath1: Key path to sort by. Must be Comparable.
+    ///     - keyPath2: Key path to sort by in case the values of `keyPath1` match. Must be Comparable.
+    ///     - keyPath3: Key path to sort by in case the values of `keyPath1` and `keyPath2` match. Must be Comparable.
+    func sorted<T: Comparable, U: Comparable, V: Comparable>(by keyPath1: KeyPath<Element, T>,
+                                                             and keyPath2: KeyPath<Element, U>,
+                                                             and keyPath3: KeyPath<Element, V>) -> [Element] {
+        return sorted {
+            if $0[keyPath: keyPath1] != $1[keyPath: keyPath1] {
+                return $0[keyPath: keyPath1] < $1[keyPath: keyPath1]
+            }
+            if $0[keyPath: keyPath2] != $1[keyPath: keyPath2] {
+                return $0[keyPath: keyPath2] < $1[keyPath: keyPath2]
+            }
+            return $0[keyPath: keyPath3] < $1[keyPath: keyPath3]
+        }
     }
 
     /// SwifterSwift: Sum of a `AdditiveArithmetic` property of each `Element` in a `Sequence`.
@@ -212,6 +247,26 @@ public extension Sequence {
     func sum<T: AdditiveArithmetic>(for keyPath: KeyPath<Element, T>) -> T {
         // Inspired by: https://swiftbysundell.com/articles/reducers-in-swift/
         return reduce(.zero) { $0 + $1[keyPath: keyPath] }
+    }
+
+    /// SwifterSwift: Returns the first element of the sequence with having property by given key path equals to given `value`.
+    ///
+    /// - Parameters:
+    ///   - keyPath: The `KeyPath` of property for `Element` to compare.
+    ///   - value: The value to compare with `Element` property
+    /// - Returns: The first element of the collection that has property by given key path equals to given `value` or `nil` if there is no such element.
+    func first<T: Equatable>(where keyPath: KeyPath<Element, T>, equals value: T) -> Element? {
+        return first { $0[keyPath: keyPath] == value }
+    }
+
+    /// SwifterSwift: Returns the last element of the sequence with having property by given key path equals to given `value`.
+    ///
+    /// - Parameters:
+    ///   - keyPath: The `KeyPath` of property for `Element` to compare.
+    ///   - value: The value to compare with `Element` property
+    /// - Returns: The last element of the collection that has property by given key path equals to given `value` or `nil` if there is no such element.
+    func last<T: Equatable>(where keyPath: KeyPath<Element, T>, equals value: T) -> Element? {
+        return last { $0[keyPath: keyPath] == value }
     }
 }
 

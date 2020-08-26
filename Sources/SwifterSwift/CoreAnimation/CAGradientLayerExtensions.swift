@@ -9,7 +9,7 @@
 #if !os(watchOS) && !os(Linux) && canImport(QuartzCore)
 import QuartzCore
 
-extension CAGradientLayer {
+public extension CAGradientLayer {
 
     /// SwifterSwift: Creates a CAGradientLayer with the specified colors, location, startPoint, endPoint, and type.
     /// - Parameter colors: An array of colors defining the color of each gradient stop
@@ -22,7 +22,11 @@ extension CAGradientLayer {
     /// - Parameter startPoint: start point corresponds to the first gradient stop (I.e. [0,0] is the bottom-corner of the layer, [1,1] is the top-right corner.)
     /// - Parameter endPoint: end point corresponds to the last gradient stop
     /// - Parameter type: The kind of gradient that will be drawn. Currently, the only allowed values are `axial' (the default value), `radial', and `conic'.
-    convenience init(colors: [Color], locations: [CGFloat]? = nil, startPoint: CGPoint, endPoint: CGPoint, type: CAGradientLayerType = .axial) {
+    convenience init(colors: [Color],
+                     locations: [CGFloat]? = nil,
+                     startPoint: CGPoint = CGPoint(x: 0.5, y: 0),
+                     endPoint: CGPoint = CGPoint(x: 0.5, y: 1),
+                     type: CAGradientLayerType = .axial) {
         self.init()
         self.colors =  colors.map { $0.cgColor }
         self.locations = locations?.map { NSNumber(value: Double($0)) }
