@@ -625,11 +625,11 @@
 		F8C1AE74225B871F0045D5A0 /* NSRegularExpressionExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C1AE73225B871F0045D5A0 /* NSRegularExpressionExtensionsTests.swift */; };
 		F8C1AE75225B871F0045D5A0 /* NSRegularExpressionExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C1AE73225B871F0045D5A0 /* NSRegularExpressionExtensionsTests.swift */; };
 		F8C1AE76225B871F0045D5A0 /* NSRegularExpressionExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C1AE73225B871F0045D5A0 /* NSRegularExpressionExtensionsTests.swift */; };
+		F8DED22624EAA2070068F758 /* UIScrollViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86B3F7AB208D3D5C00BC297B /* UIScrollViewExtensions.swift */; };
+		F8DED22724EAA20F0068F758 /* UIScrollViewExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86B3F7AD208D3DF300BC297B /* UIScrollViewExtensionsTests.swift */; };
 		F8EC9E4E24D01C360089401E /* XCTestExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8EC9E4D24D01C360089401E /* XCTestExtensions.swift */; };
 		F8EC9E4F24D01C360089401E /* XCTestExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8EC9E4D24D01C360089401E /* XCTestExtensions.swift */; };
 		F8EC9E5024D01C360089401E /* XCTestExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8EC9E4D24D01C360089401E /* XCTestExtensions.swift */; };
-		F8DED22624EAA2070068F758 /* UIScrollViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86B3F7AB208D3D5C00BC297B /* UIScrollViewExtensions.swift */; };
-		F8DED22724EAA20F0068F758 /* UIScrollViewExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86B3F7AD208D3DF300BC297B /* UIScrollViewExtensionsTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2731,7 +2731,7 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MARKETING_VERSION = 5.2.0;
+				MARKETING_VERSION = 5.2.1;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.swifterswift.SwifterSwift-iOS";
@@ -2802,7 +2802,7 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MARKETING_VERSION = 5.2.0;
+				MARKETING_VERSION = 5.2.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.swifterswift.SwifterSwift-iOS";
 				PRODUCT_NAME = SwifterSwift;
@@ -2877,7 +2877,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/Sources/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MARKETING_VERSION = 5.2.0;
+				MARKETING_VERSION = 5.2.1;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.swifterswift.SwifterSwift-tvOS";
@@ -2948,7 +2948,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/Sources/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MARKETING_VERSION = 5.2.0;
+				MARKETING_VERSION = 5.2.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.swifterswift.SwifterSwift-tvOS";
 				PRODUCT_NAME = SwifterSwift;
@@ -3025,7 +3025,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/Sources/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MARKETING_VERSION = 5.2.0;
+				MARKETING_VERSION = 5.2.1;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.swifterswift.SwifterSwift-watchOS";
@@ -3097,7 +3097,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/Sources/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MARKETING_VERSION = 5.2.0;
+				MARKETING_VERSION = 5.2.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.swifterswift.SwifterSwift-watchOS";
 				PRODUCT_NAME = SwifterSwift;
@@ -3175,7 +3175,7 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
-				MARKETING_VERSION = 5.2.0;
+				MARKETING_VERSION = 5.2.1;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.swifterswift.SwifterSwift-macOS";
@@ -3246,7 +3246,7 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
-				MARKETING_VERSION = 5.2.0;
+				MARKETING_VERSION = 5.2.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.swifterswift.SwifterSwift-macOS";
 				PRODUCT_NAME = SwifterSwift;
