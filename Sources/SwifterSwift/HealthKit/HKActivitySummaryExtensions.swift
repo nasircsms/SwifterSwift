@@ -6,7 +6,7 @@
 //  Copyright © 2020 SwifterSwift
 //
 
-#if canImport(HealthKit)
+#if !os(tvOS) && canImport(HealthKit)
 import HealthKit
 
 // MARK: - Properties
